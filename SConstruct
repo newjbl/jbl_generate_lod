@@ -8,7 +8,15 @@ env.Append(CPPPATH=[
 	"src/",
 	"src/meshoptimizer/"])
 
-sources = Glob("src/*.cpp") +  Glob("/src/meshoptimizer/*.cpp")
+sources = Glob("src/*.cpp") +  Glob("src/meshoptimizer/simplifier.cpp")
+
+print("📌 编译文件列表：", [str(f) for f in sources])
+
+# 过滤掉 allocator.cpp
+sources = [f for f in sources if not f.name.endswith("allocator.cpp")]
+
+print("📌 编译文件列表：", [str(f) for f in sources])
+
 
 if env["platform"] == "windows":
     library = env.SharedLibrary(
