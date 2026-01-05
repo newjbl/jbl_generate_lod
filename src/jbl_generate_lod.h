@@ -24,8 +24,10 @@ public:
 	static bool jbl_generate_lod(
 		const Ref<ArrayMesh> &mesh,
         const String &save_dir,
+		const String &save_format,
         int max_lods = 8,
-        float reduction_ratio = 0.5f);
+        float reduction_ratio = 0.5f,
+		float error_f=0.01);
 
 };
 

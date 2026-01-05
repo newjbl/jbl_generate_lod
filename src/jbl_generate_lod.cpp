@@ -1,4 +1,5 @@
 #include "jbl_generate_lod.h"
+
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
@@ -12,13 +13,14 @@
 
 using namespace godot;
 
+
 void JBL_GENERATE_LOD::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("a_test_fun"), &JBL_GENERATE_LOD::a_test_fun);
 	// 绑定LOD生成函数，
 	
 	ClassDB::bind_static_method(
         "JBL_GENERATE_LOD",
-        D_METHOD("jbl_generate_lod", "mesh", "save_dir", "max_lods", "reduction_ratio"),
+        D_METHOD("jbl_generate_lod", "mesh", "save_dir", "save_format", "max_lods", "reduction_ratio", "error_f"),
         &JBL_GENERATE_LOD::jbl_generate_lod
     );
 	
@@ -46,10 +48,15 @@ void JBL_GENERATE_LOD::a_test_fun() {
 bool JBL_GENERATE_LOD::jbl_generate_lod(
     const Ref<ArrayMesh> &mesh,
     const String &save_dir,
+	const String &save_format,
     int max_lods,
-    float reduction_ratio
-) {
+    float reduction_ratio,
+	float error_f
 	
+) {
+	UtilityFunctions::print("jbl_generate_lod:");
+	UtilityFunctions::print(error_f);
+	UtilityFunctions::print(save_format);
     ERR_FAIL_COND_V(mesh.is_null(), false);
     ERR_FAIL_COND_V(max_lods <= 0, false);
 
@@ -106,7 +113,7 @@ bool JBL_GENERATE_LOD::jbl_generate_lod(
                 vertex_count,
                 sizeof(Vector3),
                 target_index_count,
-                1e-2f                        // error tolerance
+                error_f                        // error tolerance
             );
             // ----------------------------------
 
@@ -135,7 +142,7 @@ bool JBL_GENERATE_LOD::jbl_generate_lod(
         }
 
         const String path =
-            save_dir.path_join("lod_" + itos(lod) + ".res");
+            save_dir.path_join("lod_" + itos(lod) + "." + save_format);
 
         Error err = ResourceSaver::get_singleton()->save(lod_mesh, path);
         if (err != OK) {
